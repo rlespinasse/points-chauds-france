@@ -1,0 +1,27 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__datagouv__search_datasets",
+      "mcp__datagouv__list_dataset_resources",
+      "mcp__datagouv__get_resource_info",
+      "Bash(npm run:*)",
+      "Bash(npm install:*)",
+      "Bash(node scripts/discover-dataset.mjs:*)",
+      "WebFetch"
+    ]
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "jq -r '.tool_input.file_path // empty' | grep -q 'src/config.ts$' && npm run validate-config"
+          }
+        ]
+      }
+    ]
+  },
+  "customSkills": [".claude/skills/discover-dataset.md"]
+}

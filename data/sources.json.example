@@ -1,0 +1,130 @@
+{
+  "project": {
+    "name": "My Regional Atlas",
+    "title": "Interactive Regional Map",
+    "description": "Explore regional geographic data",
+    "center": [48.8566, 2.3522],
+    "zoom": 6,
+    "basePath": "/"
+  },
+  "categories": [
+    {
+      "id": "administrative",
+      "label": "Administrative Divisions",
+      "description": "Political and administrative boundaries"
+    },
+    {
+      "id": "natural",
+      "label": "Natural Features",
+      "description": "Forests, water, terrain"
+    }
+  ],
+  "layers": {
+    "administrative/communes": {
+      "name": "Communes",
+      "category": "administrative",
+      "description": "French municipal boundaries",
+      "dataset_id": "5d95544ac751df306cd20c21",
+      "resource_id": "8f2852b4-76c7-40ae-b75b-9841a6cfee31",
+      "dataset_url": "https://www.data.gouv.fr/datasets/5d95544ac751df306cd20c21",
+      "format": "geojson",
+      "file": "communes.geojson",
+      "geometry_type": "polygon",
+      "style": {
+        "color": "#1f2937",
+        "weight": 1,
+        "opacity": 0.8,
+        "fill": true,
+        "fillColor": "#3b82f6",
+        "fillOpacity": 0.1
+      },
+      "tooltip_field": "nom",
+      "search_props": {
+        "title": "properties.nom",
+        "text": [
+          "properties.nom",
+          "properties.code"
+        ]
+      },
+      "detail_fields": [
+        "nom",
+        "code",
+        "region"
+      ],
+      "active": true,
+      "metadata": {
+        "source": "INSEE",
+        "year": 2022,
+        "record_count": 34965,
+        "update_frequency": "Annually"
+      }
+    },
+    "administrative/regions": {
+      "name": "Regions",
+      "category": "administrative",
+      "description": "French regional boundaries",
+      "dataset_id": "5d95544ac751df306cd20d42",
+      "resource_id": "abc123def456",
+      "dataset_url": "https://www.data.gouv.fr/datasets/5d95544ac751df306cd20d42",
+      "format": "geojson",
+      "file": "regions.geojson",
+      "geometry_type": "polygon",
+      "style": {
+        "color": "#059669",
+        "weight": 2,
+        "opacity": 0.9,
+        "fill": true,
+        "fillColor": "#10b981",
+        "fillOpacity": 0.15
+      },
+      "tooltip_field": "nom",
+      "search_props": {
+        "title": "properties.nom",
+        "text": ["properties.nom"]
+      },
+      "detail_fields": [
+        "nom",
+        "code"
+      ],
+      "active": false,
+      "metadata": {
+        "source": "INSEE",
+        "year": 2022,
+        "record_count": 18
+      }
+    },
+    "natural/forests": {
+      "name": "Forests",
+      "category": "natural",
+      "description": "Forest coverage",
+      "dataset_id": "5e12345abc678def",
+      "resource_id": "xyz789uvw012",
+      "dataset_url": "https://www.data.gouv.fr/datasets/5e12345abc678def",
+      "format": "geojson",
+      "file": "forests.geojson",
+      "geometry_type": "polygon",
+      "style": {
+        "color": "#166534",
+        "weight": 1,
+        "fill": true,
+        "fillColor": "#22c55e",
+        "fillOpacity": 0.3
+      },
+      "tooltip_field": "type",
+      "search_props": {
+        "title": "properties.type",
+        "text": ["properties.type", "properties.name"]
+      },
+      "detail_fields": [
+        "type",
+        "name",
+        "area_hectares"
+      ],
+      "active": false,
+      "metadata": {
+        "source": "IGN",
+        "year": 2020
+      }
+    }
+  }
+}
