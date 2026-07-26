@@ -1,7 +1,7 @@
 {
-  "name": "geopages-template",
+  "name": "points-chauds-france",
   "version": "0.0.1",
-  "description": "Template for creating geodata atlas projects with leaflet-atlas",
+  "description": "Carte des points chauds détectés par satellite en France (NASA FIRMS)",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -9,6 +9,7 @@
     "preview": "vite preview",
     "validate-config": "node scripts/validate-geojson.mjs",
     "discover-dataset": "node scripts/discover-dataset.mjs",
+    "fetch-firms": "node scripts/fetch-firms.mjs",
     "generate": "python scripts/generate-config.py"
   },
   "dependencies": {

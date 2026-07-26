@@ -1,203 +1,70 @@
-# Geopages Template
+# Points chauds France
 
-Create interactive geodata atlases in minutes, not hours.
+**Points chauds France** is an interactive map of satellite-detected heat/fire hotspots ("points chauds") across France, built from NASA FIRMS VIIRS active-fire data. It shows every thermal detection captured by the Suomi NPP, NOAA-20 and NOAA-21 satellites over the last 5 days — industrial sites, flares, agricultural burning and actual vegetation fires alike. The app doesn't distinguish forest fires from other heat sources; it visualizes raw satellite detections, not confirmed incident reports.
 
-**Turn a geo idea into a live map in ~15 minutes:**
-1. Clone template (2 min)
-2. Add GeoJSON data (5 min)
-3. Configure in `src/config.ts` (5 min)
-4. Push to GitHub → Auto-deploy (1 min)
+Each hotspot is reverse-geocoded to its French commune, colored by Fire Radiative Power (FRP) intensity, and can be replayed day-by-day using an on-map time slider.
 
-## What You Get
-
-- ✅ **Instant setup:** Vite 8 + TypeScript, ready to go
-- ✅ **Leaflet-atlas integration:** Config-driven map framework
-- ✅ **datagouv MCP:** Search & fetch French open data instantly (in Claude Code)
-- ✅ **GitHub Pages ready:** Auto-deploy on push
-- ✅ **Scale smoothly:** Simple config → sources.json + generation when you grow
-
-## Quick Start
-
-### 1. Clone Template
+## Running locally
 
 ```bash
-git clone https://github.com/rlespinasse/geopages-template my-atlas
-cd my-atlas
+git clone https://github.com/rlespinasse/points-chauds-france
+cd points-chauds-france
 npm install
 npm run dev
 ```
 
-Opens http://localhost:5173 with a sample layer.
-
-### 2. Choose Your Path
-
-**New to Geo? Follow the Learning Path:**
-- Read `docs/tutorials/quickstart.md` (5 min)
-- Follow `docs/tutorials/create-first-project.md` (15 min)
-- Understand `docs/explanation/architecture.md`
-
-**Experienced? Go straight to work:**
-- Reference `docs/reference/config-api.md` for API details
-- Use `docs/how-to/` guides for specific tasks
-- Check `docs/reference/faq.md` for troubleshooting
-
-**Scaling your project?**
-- Read `docs/explanation/config-patterns.md` to understand when to upgrade
-- Follow `docs/how-to/scale-to-complex.md` to add sources.json
-
-## What's Inside
-
-```
-src/
-  ├─ config.ts          ← Your main config (layers, styles, details)
-  ├─ main.ts            ← Entry point
-  └─ css/
-      └─ app.css        ← Project CSS
-
-public/data/
-  └─ *.geojson          ← Your GeoJSON files
-
-docs/
-  ├─ tutorials/         ← Learn-by-doing guides
-  ├─ how-to/            ← Accomplish specific tasks
-  ├─ explanation/       ← Understand design choices
-  └─ reference/         ← API lookups & schemas
-```
-
-## Adding Your First Layer
-
-1. **Get GeoJSON data:**
-   - Download from [data.gouv.fr](https://www.data.gouv.fr)
-   - Or use Claude Code: `"Find communes dataset"` (datagouv MCP will help)
-
-2. **Save to `public/data/`:**
-   ```bash
-   mv my-data.geojson public/data/
-   ```
-
-3. **Reference in `src/config.ts`:**
-   ```typescript
-   layerGroups: [
-     {
-       group: 'My Data',
-       layers: [
-         {
-           id: 'communes',
-           label: 'Communes',
-           file: 'data/my-data.geojson',
-           active: true,
-         },
-       ],
-     },
-   ],
-   ```
-
-4. **Reload browser** → Done! Layer appears on map.
-
-## Using datagouv MCP (in Claude Code)
-
-The template has datagouv MCP pre-configured with a custom skill for geo projects.
-
-### Quick Method: Use the Custom Skill
-
-```
-/geopages:discover-dataset "communes boundaries"
-```
-
-Returns ranked options with download links. Then:
-
-```
-"Download the first one and add it to my atlas"
-```
-
-Claude: Downloads → Saves to `public/data/` → Updates `config.ts` → Renders on map
-
-### Direct Method: Ask Claude
-
-If you prefer not to use the skill:
-
-```
-me: "Find communes boundaries dataset"
-
-Claude: Queries datagouv → Returns top matches
-
-me: "Add the first one to my atlas"
-
-Claude: Downloads → Saves → Updates config
-```
-
-**Time saved:** 5-10 minutes per dataset (vs. manual portal browsing)
-
-See `docs/how-to/discover-datasets.md` for full guide.
-
-## Building for Production
+Opens http://localhost:5173 using the hotspot data already committed in `public/data/`. To refresh it yourself, get a free key at https://firms.modaps.eosdis.nasa.gov/api/map_key/ and run:
 
 ```bash
-npm run build
-git push  # Auto-deploys to GitHub Pages
+FIRMS_MAP_KEY=xxxx npm run fetch-firms
 ```
 
-Your atlas is live at: `https://yourname.github.io/repo-name/`
+Other scripts: `npm run build` (production build), `npm run preview` (preview that build), `npm run validate-config` (checks every `public/data/*.geojson` is valid — also runs automatically on every `src/config.ts` edit via a Claude Code hook, see `.claude/settings.json`).
 
-## Documentation Structure
+`package.json` also still lists `discover-dataset` and `generate` — unused leftovers from the `geopages-template` scaffold this project started from (a generic multi-layer scaling pattern this app never needed, since it has exactly 4 fixed, hand-written layers).
 
-Docs are organized by [Diataxis](https://diataxis.fr/) principles:
+## Architecture
 
-| Type | When | Example |
-|------|------|---------|
-| **Tutorials** | Learning from scratch | `docs/tutorials/quickstart.md` |
-| **How-to** | Accomplish a task | `docs/how-to/customize-styling.md` |
-| **Explanation** | Understand concepts | `docs/explanation/architecture.md` |
-| **Reference** | Look up details | `docs/reference/config-api.md` |
+```
+NASA FIRMS API ──▶ scripts/fetch-firms.mjs ──▶ public/data/*.geojson ──▶ src/config.ts + src/main.ts ──▶ static site
+                         │
+                         ├─▶ data/commune-cache.json   (geocoding cache, 30-day retention)
+                         └─▶ data/archive/YYYY-MM-DD.geojson  (own history, 90-day retention)
+```
 
-Choose the right doc for your situation.
+No backend, no database: `scripts/fetch-firms.mjs` writes GeoJSON files into `public/data/`, and the frontend is a static Vite build reading them through [`leaflet-atlas`](https://www.npmjs.com/package/leaflet-atlas), a config-driven Leaflet wrapper.
 
-## Project Configuration
+**The pipeline**, in order:
+1. **Fetch** — FIRMS area CSV API, once per satellite (`VIIRS_SNPP_NRT`/`NOAA20`/`NOAA21`), over France + Corsica, requesting the maximum 5-day window FIRMS allows per request (`DAY_RANGE = 5`).
+2. **Reverse-geocode** each point to its commune via `geo.api.gouv.fr` (point-in-polygon, unlike BAN address geocoding which fails on remote points with no nearby building). Cached in `data/commune-cache.json` (keyed by rounded coordinates) — the cron runs every 3h and each request's 5-day window overlaps ~5/6 with the previous run's, so without this cache nearly every point would be re-geocoded on every run.
+3. **Archive** — every point is appended to `data/archive/YYYY-MM-DD.geojson`, deduped by `satellite + acq_date + acq_time + coordinates` (FIRMS has no stable per-detection ID). Exists because FIRMS caps a single request at 5 days — this local archive is the only place history beyond that survives. **Not yet wired into the frontend** (the time slider still only covers the live 5-day window).
+4. **Bucket by FRP** into `public/data/firms-france-{faible,moderee,forte}.geojson` (<5MW / 5-20MW / ≥20MW) — `leaflet-atlas` styles a whole layer at once, so per-intensity coloring is one layer/file per bucket.
+5. **Commune context** — `public/data/communes-context.geojson`, boundary + hotspot count per commune with at least one detection.
 
-Edit `src/config.ts` to customize:
+**Frontend**: `src/config.ts` is the `leaflet-atlas` config (layers, styles, tooltips, detail panels). `src/main.ts` bootstraps the map and adds two hand-built controls (not part of `leaflet-atlas` itself): a **time slider** (bottom-right, steps through the last 5 days one Paris-local calendar day at a time — since `leaflet-atlas` has no per-feature filter API, it reaches into each layer's `L.geoJSON` FeatureGroup directly via `getAllLayerDefs()`), and an **FRP legend** (bottom-left, driven by the same `frpScale` array used for the layer styles so it can't drift out of sync).
 
-- **Map:** Center, zoom, projection
-- **Layers:** Add/remove/style your GeoJSON data
-- **Tooltips:** What appears on hover
-- **Details:** What appears on click
-- **Base layers:** Switch between tile services
-- **About:** Legal, data sources, credits
+## Deployment
 
-See `docs/reference/config-api.md` for full API.
+Already fully configured — nothing to set up beyond the secret below.
 
-## Scaling to Complex Projects
+- **`.github/workflows/deploy.yml`** builds with Vite and deploys to GitHub Pages (Actions-based, no `gh-pages` branch) on every push to `main`. Base path auto-detects from the repo name (`vite.config.js`'s `getBasePath()`), so renaming the repo needs no config change.
+- **`.github/workflows/refresh-firms.yml`** runs the fetch pipeline every 3 hours and commits changed data files to `main` — which naturally re-triggers `deploy.yml` via its normal push trigger, no special-casing needed. Requires a **`FIRMS_MAP_KEY` repository secret** (Settings → Secrets and variables → Actions → New repository secret) — without it the workflow fails at the fetch step and data goes stale, though the deployed site itself keeps working with whatever was last committed.
 
-When you have 20+ layers:
+## FAQ
 
-1. Create `data/sources.json` with layer metadata
-2. Create `scripts/generate-config.py` to auto-generate config
-3. Follow `docs/how-to/scale-to-complex.md`
+**Why only 5 days of history?** FIRMS's API caps a single request at 5 days; there's no way to ask for more in one call. The local archive (see above) accumulates more, just not wired into the UI yet.
 
-This separates data definitions from site config, making it easier to manage.
+**Does this only show forest fires?** No — every VIIRS thermal detection in the bounding box, not just forest fires. An earlier version filtered against BD Forêt (French forest cover) to isolate likely forest fires; that filter was deliberately removed.
+
+## Data sources
+
+- Hotspot detections: [NASA FIRMS](https://firms.modaps.eosdis.nasa.gov/) (LANCE, NASA GSFC) — VIIRS Suomi NPP, NOAA-20, NOAA-21.
+- Commune/département/région lookup: [geo.api.gouv.fr](https://geo.api.gouv.fr/) (Etalab).
 
 ## Contributing
 
-To improve the template:
-
-1. Make changes in your clone
-2. Test thoroughly
-3. Submit PR to `rlespinasse/geopages-template`
-
-See `CONTRIBUTING.md` for details.
-
-## Help & Documentation
-
-- **Quick help:** `docs/tutorials/quickstart.md`
-- **Full walkthrough:** `docs/tutorials/create-first-project.md`
-- **How-to guides:** `docs/how-to/`
-- **API reference:** `docs/reference/config-api.md`
-- **Design decisions:** `docs/explanation/`
-- **Common issues:** `docs/reference/faq.md`
+Bug reports and PRs welcome at [github.com/rlespinasse/points-chauds-france](https://github.com/rlespinasse/points-chauds-france/issues). No automated test suite yet — `npm run build` is the sanity check. Contributions are licensed under MIT.
 
 ## License
 
 MIT
-
----
-
-**Ready to build your first atlas?** Start with `docs/tutorials/quickstart.md`

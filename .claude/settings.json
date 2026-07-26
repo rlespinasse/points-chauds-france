@@ -22,6 +22,5 @@
         ]
       }
     ]
-  },
-  "customSkills": [".claude/skills/discover-dataset.md"]
+  }
 }

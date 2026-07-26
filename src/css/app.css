@@ -38,3 +38,79 @@ body {
 .leaflet-popup {
   z-index: 700;
 }
+
+.frp-legend {
+  background: white;
+  padding: 8px 12px;
+  border-radius: 6px;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.4);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.frp-legend-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.frp-legend-swatch {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 1.5px solid;
+  flex-shrink: 0;
+}
+
+.time-slider-control {
+  background: white;
+  padding: 8px 12px;
+  border-radius: 6px;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.4);
+  font-size: 12px;
+  line-height: 1.6;
+  min-width: 180px;
+}
+
+.time-slider-control strong {
+  display: block;
+  margin-bottom: 4px;
+}
+
+.time-slider-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.time-slider-input {
+  flex: 1;
+}
+
+.time-slider-step {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  background: white;
+  font-size: 10px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0;
+}
+
+.time-slider-step:hover:not(:disabled) {
+  background: var(--gray-100);
+}
+
+.time-slider-step:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.time-slider-label {
+  text-align: center;
+  font-weight: 500;
+}
