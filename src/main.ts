@@ -54,15 +54,12 @@ function setupTimeSlider(app: any) {
   const now = new Date()
   const dateForDaysAgo = (daysAgo: number) => new Date(now.getTime() - daysAgo * 24 * 60 * 60 * 1000)
 
-  const dayLabel = (daysAgo: number) => {
-    if (daysAgo === 0) return "Aujourd'hui"
-    if (daysAgo === 1) return 'Hier'
-    return dateForDaysAgo(daysAgo).toLocaleDateString('fr-FR', {
+  const dayLabel = (daysAgo: number) =>
+    dateForDaysAgo(daysAgo).toLocaleDateString('fr-FR', {
       weekday: 'short',
       day: '2-digit',
       month: '2-digit',
     })
-  }
 
   const applyFilter = (daysAgo: number) => {
     const targetDate = parisDateString(dateForDaysAgo(daysAgo))
