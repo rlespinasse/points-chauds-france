@@ -13,6 +13,10 @@
  *
  * Requires a free FIRMS MAP_KEY: https://firms.modaps.eosdis.nasa.gov/api/map_key/
  * Run: FIRMS_MAP_KEY=xxxx npm run fetch-firms
+ *
+ * One-off backfill of older archive days (beyond what the 3h cron run has
+ * accumulated), limited by however much NRT retention FIRMS still has:
+ * FIRMS_MAP_KEY=xxxx FIRMS_BACKFILL_DAYS=30 npm run fetch-firms
  */
 
 import { readFile, writeFile, readdir, unlink, mkdir } from 'fs/promises'
@@ -322,8 +326,11 @@ async function fetchCommunesContext(features) {
   return { type: 'FeatureCollection', features: boundaries }
 }
 
-async function fetchSource(mapKey, source, attempt = 1) {
-  const url = `https://firms.modaps.eosdis.nasa.gov/api/area/csv/${mapKey}/${source}/${AREA}/${DAY_RANGE}`
+// `date` is FIRMS's optional trailing path segment: DAY_RANGE days ending on
+// that date instead of ending today. Used by backfillArchive() below to pull
+// chunks further back than the regular 3h cron run has accumulated.
+async function fetchSource(mapKey, source, date, attempt = 1) {
+  const url = `https://firms.modaps.eosdis.nasa.gov/api/area/csv/${mapKey}/${source}/${AREA}/${DAY_RANGE}${date ? `/${date}` : ''}`
   let response
   let body
   try {
@@ -332,7 +339,7 @@ async function fetchSource(mapKey, source, attempt = 1) {
   } catch (err) {
     if (attempt < 3) {
       await sleep(5000)
-      return fetchSource(mapKey, source, attempt + 1)
+      return fetchSource(mapKey, source, date, attempt + 1)
     }
     throw err
   }
@@ -346,12 +353,51 @@ async function fetchSource(mapKey, source, attempt = 1) {
   return csvToGeoJSON(body).features
 }
 
+// One-off historical backfill: walk backwards in DAY_RANGE-sized chunks,
+// beyond the window the regular cron run already covers, merging each chunk
+// into the local archive only (not the live firms-france-*/communes-context
+// outputs, which represent the current 5-day window only). How far back this
+// can actually reach depends on how much NRT retention FIRMS still has for
+// the requested dates — expect it to thin out well before ARCHIVE_MAX_AGE_DAYS.
+async function backfillArchive(mapKey, days) {
+  console.log(`Backfilling up to ${days} extra day(s) of archive history...`)
+  const today = new Date()
+
+  for (let offset = DAY_RANGE; offset < DAY_RANGE + days; offset += DAY_RANGE) {
+    const endDate = new Date(today)
+    endDate.setUTCDate(endDate.getUTCDate() - offset)
+    const dateStr = endDate.toISOString().slice(0, 10)
+
+    console.log(`  chunk ending ${dateStr}...`)
+    const featuresPerSource = await Promise.all(
+      SOURCES.map((source) => fetchSource(mapKey, source, dateStr))
+    )
+    featuresPerSource.forEach((features, i) => {
+      console.log(`    ${SOURCES[i]}: ${features.length} raw hotspot(s)`)
+    })
+
+    let features = featuresPerSource.flat()
+    if (features.length === 0) continue
+
+    features = await enrichWithLocation(features)
+    await updateArchive(features)
+  }
+
+  console.log('✓ Backfill complete.')
+}
+
 async function main() {
   const mapKey = process.env.FIRMS_MAP_KEY
   if (!mapKey) {
     console.error('Missing FIRMS_MAP_KEY environment variable.')
     console.error('Get a free key at https://firms.modaps.eosdis.nasa.gov/api/map_key/')
     process.exit(1)
+  }
+
+  const backfillDays = Number(process.env.FIRMS_BACKFILL_DAYS || 0)
+  if (backfillDays > 0) {
+    await backfillArchive(mapKey, backfillDays)
+    return
   }
 
   const featuresPerSource = await Promise.all(SOURCES.map((source) => fetchSource(mapKey, source)))

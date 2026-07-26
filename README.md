@@ -37,7 +37,7 @@ No backend, no database: `scripts/fetch-firms.mjs` writes GeoJSON files into `pu
 **The pipeline**, in order:
 1. **Fetch** — FIRMS area CSV API, once per satellite (`VIIRS_SNPP_NRT`/`NOAA20`/`NOAA21`), over France + Corsica, requesting the maximum 5-day window FIRMS allows per request (`DAY_RANGE = 5`).
 2. **Reverse-geocode** each point to its commune via `geo.api.gouv.fr` (point-in-polygon, unlike BAN address geocoding which fails on remote points with no nearby building). Cached in `data/commune-cache.json` (keyed by rounded coordinates) — the cron runs every 3h and each request's 5-day window overlaps ~5/6 with the previous run's, so without this cache nearly every point would be re-geocoded on every run.
-3. **Archive** — every point is appended to `data/archive/YYYY-MM-DD.geojson`, deduped by `satellite + acq_date + acq_time + coordinates` (FIRMS has no stable per-detection ID). Exists because FIRMS caps a single request at 5 days — this local archive is the only place history beyond that survives. **Not yet wired into the frontend** (the time slider still only covers the live 5-day window).
+3. **Archive** — every point is appended to `data/archive/YYYY-MM-DD.geojson`, deduped by `satellite + acq_date + acq_time + coordinates` (FIRMS has no stable per-detection ID). Exists because FIRMS caps a single request at 5 days — this local archive is the only place history beyond that survives. The frontend's time slider lazily fetches these archived days on demand beyond the live 5-day window. `FIRMS_BACKFILL_DAYS=<n> npm run fetch-firms` does a one-off backfill of older days into the archive, limited by however much NRT retention FIRMS still has for those dates.
 4. **Bucket by FRP** into `public/data/firms-france-{faible,moderee,forte}.geojson` (<5MW / 5-20MW / ≥20MW) — `leaflet-atlas` styles a whole layer at once, so per-intensity coloring is one layer/file per bucket.
 5. **Commune context** — `public/data/communes-context.geojson`, boundary + hotspot count per commune with at least one detection.
 
@@ -52,7 +52,7 @@ Already fully configured — nothing to set up beyond the secret below.
 
 ## FAQ
 
-**Why only 5 days of history?** FIRMS's API caps a single request at 5 days; there's no way to ask for more in one call. The local archive (see above) accumulates more, just not wired into the UI yet.
+**Why only 5 days of history?** FIRMS's API caps a single request at 5 days; there's no way to ask for more in one call. The local archive (see above) accumulates more over time via the cron run, up to 90 days, and the time slider reaches into it beyond the live 5-day window. To backfill older days beyond what the cron has accumulated so far, run `FIRMS_BACKFILL_DAYS=<n> npm run fetch-firms` — how far back this actually reaches depends on FIRMS's own NRT data retention, not just our 90-day cap.
 
 **Does this only show forest fires?** No — every VIIRS thermal detection in the bounding box, not just forest fires. An earlier version filtered against BD Forêt (French forest cover) to isolate likely forest fires; that filter was deliberately removed.
 
