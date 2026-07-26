@@ -70,7 +70,7 @@ body {
   box-shadow: 0 1px 5px rgba(0, 0, 0, 0.4);
   font-size: 12px;
   line-height: 1.6;
-  min-width: 180px;
+  min-width: 220px;
 }
 
 .time-slider-control strong {
@@ -84,8 +84,112 @@ body {
   gap: 6px;
 }
 
-.time-slider-input {
+.time-slider-track-wrap {
+  position: relative;
   flex: 1;
+  padding-top: 18px;
+  padding-bottom: 14px;
+}
+
+.time-slider-input {
+  width: 100%;
+  display: block;
+  margin: 6px 0 0;
+  height: 14px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+}
+
+/* Native range styling (track height, thumb size/color, incl. the
+   browser's default blue accent) varies enough across browsers to bleed
+   past the reserved histogram/tick space above/below the track — reset it
+   to a fixed-size track+thumb so it stays within `.time-slider-track-wrap`'s
+   padding and matches the app's color scheme instead of the UA default. */
+.time-slider-input::-webkit-slider-runnable-track {
+  height: 4px;
+  border-radius: 2px;
+  background: #d1d5db;
+}
+
+.time-slider-input::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--primary);
+  margin-top: -5px;
+  cursor: pointer;
+}
+
+.time-slider-input::-moz-range-track {
+  height: 4px;
+  border-radius: 2px;
+  background: #d1d5db;
+}
+
+.time-slider-input::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border: none;
+  border-radius: 50%;
+  background: var(--primary);
+  cursor: pointer;
+}
+
+.time-slider-histogram {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 16px;
+  display: flex;
+  align-items: flex-end;
+  gap: 1px;
+  pointer-events: none;
+}
+
+.time-slider-bar {
+  flex: 1;
+  background: var(--primary);
+  opacity: 0.35;
+  border-radius: 1px 1px 0 0;
+  min-height: 2px;
+}
+
+.time-slider-bar.is-active {
+  opacity: 0.9;
+}
+
+.time-slider-ticks {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  pointer-events: none;
+}
+
+.time-slider-tick {
+  flex: 1;
+  text-align: center;
+  font-size: 9px;
+  white-space: nowrap;
+  color: var(--gray-900);
+  opacity: 0.65;
+}
+
+.time-slider-tick.is-active {
+  font-weight: 700;
+  opacity: 1;
+}
+
+.time-slider-controls-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  margin-top: 2px;
 }
 
 .time-slider-step {
@@ -110,7 +214,54 @@ body {
   cursor: default;
 }
 
+.time-slider-play {
+  width: 26px;
+  height: 26px;
+}
+
+.time-slider-play[aria-pressed='true'] {
+  background: var(--primary);
+  border-color: var(--primary-dark);
+  color: white;
+}
+
 .time-slider-label {
   text-align: center;
   font-weight: 500;
+}
+
+.time-slider-sr-live {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+  .time-slider-control {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    min-width: 0;
+    border-radius: 0;
+    box-sizing: border-box;
+    padding: 8px 12px calc(8px + env(safe-area-inset-bottom));
+  }
+
+  .time-slider-step,
+  .time-slider-play {
+    width: 32px;
+    height: 32px;
+  }
+
+  /* The full-width slider bar sits fixed at the bottom, so push Leaflet's
+     own bottom-anchored controls (zoom, layers drawer, legend, attribution)
+     up above it instead of letting the two overlap. */
+  .leaflet-bottom {
+    bottom: 130px;
+  }
 }
