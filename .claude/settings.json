@@ -17,7 +17,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "jq -r '.tool_input.file_path // empty' | grep -q 'src/config.ts$' && npm run validate-config"
+            "command": "file_path=$(jq -r '.tool_input.file_path // empty'); if [[ \"$file_path\" == *src/config.ts ]]; then npm run validate-config; fi"
           }
         ]
       }
