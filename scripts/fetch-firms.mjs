@@ -28,8 +28,9 @@ const communeCacheFile = path.join(__dirname, '../data/commune-cache.json')
 // FIRMS only serves a 5-day window per request (see DAY_RANGE below); this
 // directory accumulates our own longer history across runs, one file per
 // calendar day, so "beyond 5 days" relies on what we've fetched ourselves
-// rather than on FIRMS. Not yet wired into the frontend slider (still 5 days).
-const archiveDir = path.join(__dirname, '../data/archive')
+// rather than on FIRMS. Lives under public/ (not data/) so Vite/Pages serves
+// it and the frontend time slider (src/main.ts) can lazily fetch past days.
+const archiveDir = path.join(__dirname, '../public/data/archive')
 const ARCHIVE_MAX_AGE_DAYS = 90
 
 // West, South, East, North — mainland France + Corsica
@@ -266,6 +267,26 @@ async function updateArchive(features) {
   if (purged > 0) {
     console.log(`  (archive: purged ${purged} day(s) older than ${ARCHIVE_MAX_AGE_DAYS} days)`)
   }
+
+  await writeArchiveIndex()
+}
+
+// A manifest of {date, count} for every archived day still on disk, so the
+// frontend can extend the time slider's range/histogram with one small
+// fetch instead of pulling every archived day's full GeoJSON upfront.
+async function writeArchiveIndex() {
+  const names = (await readdir(archiveDir).catch(() => []))
+    .filter((name) => /^\d{4}-\d{2}-\d{2}\.geojson$/.test(name))
+    .sort()
+
+  const dates = []
+  for (const name of names) {
+    const date = name.replace('.geojson', '')
+    const { features } = JSON.parse(await readFile(path.join(archiveDir, name), 'utf-8'))
+    dates.push({ date, count: features.length })
+  }
+
+  await writeFile(path.join(archiveDir, 'index.json'), JSON.stringify({ dates }))
 }
 
 async function fetchCommuneBoundary(code) {

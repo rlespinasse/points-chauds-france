@@ -5,12 +5,24 @@
  */
 
 // Fire Radiative Power (MW) color scale — shared by layer styles below
-// and by the on-map legend built in main.ts.
+// and by the on-map legend built in main.ts. `max` mirrors FRP_BUCKETS in
+// scripts/fetch-firms.mjs (intentional duplicate — that script runs outside
+// the Vite/TS pipeline) and is used by frpBucketId() to classify archive
+// features, which arrive unsplit unlike the live pre-bucketed files.
 export const frpScale = [
-  { id: 'faible', label: '< 5 MW (faible)', color: '#fde047', stroke: '#854d0e' },
-  { id: 'moderee', label: '5–20 MW (modérée)', color: '#f97316', stroke: '#7c2d12' },
-  { id: 'forte', label: '≥ 20 MW (forte)', color: '#b91c1c', stroke: '#450a0a' },
+  { id: 'faible', label: '< 5 MW (faible)', color: '#fde047', stroke: '#854d0e', max: 5 },
+  { id: 'moderee', label: '5–20 MW (modérée)', color: '#f97316', stroke: '#7c2d12', max: 20 },
+  { id: 'forte', label: '≥ 20 MW (forte)', color: '#b91c1c', stroke: '#450a0a', max: Infinity },
 ]
+
+// Classifies a raw FRP value into one of frpScale's bucket ids.
+export function frpBucketId(frp: number) {
+  const value = Number.isFinite(frp) ? frp : 0
+  for (const bucket of frpScale) {
+    if (value < bucket.max) return bucket.id
+  }
+  return frpScale[frpScale.length - 1].id
+}
 
 // Raw FIRMS codes are not human-readable — translate them for tooltips/details.
 const SATELLITE_LABELS: Record<string, string> = { N: 'Suomi NPP', N20: 'NOAA-20', N21: 'NOAA-21' }
@@ -151,6 +163,12 @@ export const config = {
       })),
     },
   ],
+
+  // ============= ARCHIVE (older-than-5-day history, lazily fetched by the time slider) ============= //
+  archive: {
+    indexFile: 'data/archive/index.json',
+    dayFile: (date: string) => `data/archive/${date}.geojson`,
+  },
 
   // ============= CONTEXT LAYERS (background reference, own "Contexte" section) ============= //
   contextLayers: [
