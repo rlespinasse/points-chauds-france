@@ -153,7 +153,12 @@ function setupTimeSlider(app: any) {
   }
 
   const applyFilter = (daysAgo: number) => {
-    if (daysAgo <= LIVE_DAYS_BACK) {
+    // Strictly less than: FIRMS' DAY_RANGE=5 window covers 5 distinct
+    // calendar days (daysAgo 0..4), not 6 — treating daysAgo === LIVE_DAYS_BACK
+    // as live left that oldest day with no matching live entries (it only
+    // exists in the archive), rendering as empty even though real data was
+    // there all along.
+    if (daysAgo < LIVE_DAYS_BACK) {
       archiveRequestId++ // invalidate any in-flight archive load
       pendingArchiveLoad = null
       if (currentArchiveLayer) {
