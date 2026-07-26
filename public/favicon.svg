@@ -1,4 +1,31 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-  <circle cx="50" cy="50" r="45" fill="#10b981" stroke="#059669" stroke-width="2"/>
-  <path d="M50 20 L70 70 L30 70 Z" fill="#059669"/>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#166534"/>
+      <stop offset="100%" stop-color="#052e16"/>
+    </linearGradient>
+    <linearGradient id="flame" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0%" stop-color="#b91c1c"/>
+      <stop offset="55%" stop-color="#f97316"/>
+      <stop offset="100%" stop-color="#fde047"/>
+    </linearGradient>
+  </defs>
+
+  <circle cx="50" cy="50" r="46" fill="url(#bg)"/>
+
+  <!-- Fir tree silhouette -->
+  <path d="M50 22 L64 46 L57 46 L68 64 L59 64 L50 78 L41 64 L32 64 L43 46 L36 46 Z" fill="#065f46"/>
+
+  <!-- Flame, fire radiative power gradient -->
+  <path d="M62 78
+           C62 68 54 64 56 54
+           C57 60 60 60 60 55
+           C60 50 56 47 57 40
+           C48 45 46 54 50 60
+           C46 58 44 54 44 50
+           C38 58 38 68 44 76
+           C40 74 38 71 37 68
+           C36 76 42 82 50 82
+           C57 82 62 78 62 78 Z"
+        fill="url(#flame)" stroke="#7c2d12" stroke-width="1"/>
 </svg>
