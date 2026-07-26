@@ -4,6 +4,8 @@
  * that produces the GeoJSON files referenced below.
  */
 
+import { analyticsConfig } from './analytics'
+
 // Fire Radiative Power (MW) color scale — shared by layer styles below
 // and by the on-map legend built in main.ts. `max` mirrors FRP_BUCKETS in
 // scripts/fetch-firms.mjs (intentional duplicate — that script runs outside
@@ -262,4 +264,9 @@ export const config = {
       `,
     },
   ],
+
+  // ============= ANALYTICS ============= //
+  // See src/analytics.ts for the shared config and the /points-chauds-france
+  // event prefix.
+  analytics: analyticsConfig,
 }
