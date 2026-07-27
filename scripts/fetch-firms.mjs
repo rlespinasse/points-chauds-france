@@ -186,7 +186,9 @@ async function enrichWithLocation(features) {
   }
 
   await writeFile(communeCacheFile, JSON.stringify(cache))
-  console.log(`  (${fromCache} point(s) from cache, ${queried} newly queried against geo.api.gouv.fr)`)
+  console.log(
+    `  (${fromCache} point(s) from cache, ${queried} newly queried against geo.api.gouv.fr)`
+  )
   if (dropped > 0) {
     console.log(`  (dropped ${dropped} point(s) outside France / unresolvable)`)
   }
@@ -209,7 +211,9 @@ function parisDateOf(acqDate, acqTime) {
   const padded = acqTime.padStart(4, '0')
   const utcDate = new Date(`${acqDate}T${padded.slice(0, 2)}:${padded.slice(2)}:00Z`)
   if (Number.isNaN(utcDate.getTime())) return null
-  const parts = Object.fromEntries(ARCHIVE_DATETIME_FORMAT.formatToParts(utcDate).map((p) => [p.type, p.value]))
+  const parts = Object.fromEntries(
+    ARCHIVE_DATETIME_FORMAT.formatToParts(utcDate).map((p) => [p.type, p.value])
+  )
   return `${parts.year}-${parts.month}-${parts.day}`
 }
 
@@ -253,7 +257,10 @@ async function updateArchive(features) {
 
     daysTouched += 1
     pointsAdded += byKey.size - before
-    await writeFile(file, JSON.stringify({ type: 'FeatureCollection', features: [...byKey.values()] }))
+    await writeFile(
+      file,
+      JSON.stringify({ type: 'FeatureCollection', features: [...byKey.values()] })
+    )
   }
 
   let purged = 0
@@ -412,7 +419,7 @@ async function main() {
     allFeatures = await enrichWithLocation(allFeatures)
   }
 
-  console.log('Updating local archive (beyond FIRMS\' 5-day window)...')
+  console.log("Updating local archive (beyond FIRMS' 5-day window)...")
   await updateArchive(allFeatures)
 
   for (const bucket of FRP_BUCKETS) {
@@ -423,14 +430,19 @@ async function main() {
     })
     const outputFile = path.join(dataDir, `firms-france-${bucket.id}.geojson`)
     await writeFile(outputFile, JSON.stringify({ type: 'FeatureCollection', features }))
-    console.log(`✓ Wrote ${features.length} hotspot(s) to ${path.relative(process.cwd(), outputFile)}`)
+    console.log(
+      `✓ Wrote ${features.length} hotspot(s) to ${path.relative(process.cwd(), outputFile)}`
+    )
   }
 
-  const communesContext = allFeatures.length > 0
-    ? await fetchCommunesContext(allFeatures)
-    : { type: 'FeatureCollection', features: [] }
+  const communesContext =
+    allFeatures.length > 0
+      ? await fetchCommunesContext(allFeatures)
+      : { type: 'FeatureCollection', features: [] }
   await writeFile(communesOutputFile, JSON.stringify(communesContext))
-  console.log(`✓ Wrote ${communesContext.features.length} commune boundary(ies) to ${path.relative(process.cwd(), communesOutputFile)}`)
+  console.log(
+    `✓ Wrote ${communesContext.features.length} commune boundary(ies) to ${path.relative(process.cwd(), communesOutputFile)}`
+  )
 }
 
 main()

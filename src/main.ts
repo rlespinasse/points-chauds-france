@@ -7,7 +7,14 @@ import markerIcon from 'leaflet/dist/images/marker-icon.png'
 import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png'
 import markerShadow from 'leaflet/dist/images/marker-shadow.png'
 import { MapApp } from 'leaflet-atlas'
-import { config, frpScale, frpBucketId, acqDateTimeToUtcDate, parisDateString, parisMinutesOfDay } from './config'
+import {
+  config,
+  frpScale,
+  frpBucketId,
+  acqDateTimeToUtcDate,
+  parisDateString,
+  parisMinutesOfDay,
+} from './config'
 
 // Leaflet's default icon path auto-detection breaks once Vite inlines the
 // marker images as base64 data URIs in production builds, causing 404s for
@@ -79,11 +86,19 @@ function setupTimeSlider(app: any) {
   const map = app.getMap()
   let daysBack = LIVE_DAYS_BACK
 
-  const entries: { group: any; marker: any; dateStr: string | null; minutesOfDay: number | null }[] = []
+  const entries: {
+    group: any
+    marker: any
+    dateStr: string | null
+    minutesOfDay: number | null
+  }[] = []
   for (const def of app.getAllLayerDefs()) {
     if (!SLIDER_LAYER_IDS.includes(def.id) || !def._leafletLayer) continue
     def._leafletLayer.eachLayer((marker: any) => {
-      const utcDate = acqDateTimeToUtcDate(marker.feature.properties.acq_date, marker.feature.properties.acq_time)
+      const utcDate = acqDateTimeToUtcDate(
+        marker.feature.properties.acq_date,
+        marker.feature.properties.acq_time
+      )
       entries.push({
         group: def._leafletLayer,
         marker,
@@ -94,7 +109,8 @@ function setupTimeSlider(app: any) {
   }
 
   const now = new Date()
-  const dateForDaysAgo = (daysAgo: number) => new Date(now.getTime() - daysAgo * 24 * 60 * 60 * 1000)
+  const dateForDaysAgo = (daysAgo: number) =>
+    new Date(now.getTime() - daysAgo * 24 * 60 * 60 * 1000)
 
   const dayLabel = (daysAgo: number) =>
     dateForDaysAgo(daysAgo).toLocaleDateString('fr-FR', {
@@ -183,8 +199,12 @@ function setupTimeSlider(app: any) {
         const nowMinutes = parisMinutesOfDay(now)
         for (const entry of entries) {
           const shouldShow =
-            (entry.dateStr === todayDate && entry.minutesOfDay !== null && entry.minutesOfDay <= nowMinutes) ||
-            (entry.dateStr === yesterdayDate && entry.minutesOfDay !== null && entry.minutesOfDay > nowMinutes)
+            (entry.dateStr === todayDate &&
+              entry.minutesOfDay !== null &&
+              entry.minutesOfDay <= nowMinutes) ||
+            (entry.dateStr === yesterdayDate &&
+              entry.minutesOfDay !== null &&
+              entry.minutesOfDay > nowMinutes)
           const isShown = entry.group.hasLayer(entry.marker)
           if (shouldShow && !isShown) entry.group.addLayer(entry.marker)
           else if (!shouldShow && isShown) entry.group.removeLayer(entry.marker)
@@ -268,8 +288,18 @@ function setupTimeSlider(app: any) {
       const nowMinutes = parisMinutesOfDay(now)
       let count = 0
       for (const entry of entries) {
-        if (entry.dateStr === todayDate && entry.minutesOfDay !== null && entry.minutesOfDay <= nowMinutes) count++
-        else if (entry.dateStr === yesterdayDate && entry.minutesOfDay !== null && entry.minutesOfDay > nowMinutes) count++
+        if (
+          entry.dateStr === todayDate &&
+          entry.minutesOfDay !== null &&
+          entry.minutesOfDay <= nowMinutes
+        )
+          count++
+        else if (
+          entry.dateStr === yesterdayDate &&
+          entry.minutesOfDay !== null &&
+          entry.minutesOfDay > nowMinutes
+        )
+          count++
       }
       return count
     }
@@ -297,7 +327,11 @@ function setupTimeSlider(app: any) {
       const dayCounts: number[] = []
       for (let i = 0; i <= daysBack; i++) {
         const daysAgo = daysBack - i
-        dayCounts.push(daysAgo === 0 ? blendedTodayCount() : countsByDate.get(parisDateString(dateForDaysAgo(daysAgo))) ?? 0)
+        dayCounts.push(
+          daysAgo === 0
+            ? blendedTodayCount()
+            : (countsByDate.get(parisDateString(dateForDaysAgo(daysAgo))) ?? 0)
+        )
       }
       const maxDayCount = Math.max(1, ...dayCounts)
       // Once the archive pushes daysBack well past a week, labeling every
@@ -311,7 +345,8 @@ function setupTimeSlider(app: any) {
       // the range's two ends stay identifiable; bars stay one-per-day
       // regardless, only the text labels get sparser.
       const TARGET_LABEL_COUNT = 5
-      const tickInterval = daysBack <= 10 ? 1 : Math.max(7, Math.ceil(daysBack / TARGET_LABEL_COUNT))
+      const tickInterval =
+        daysBack <= 10 ? 1 : Math.max(7, Math.ceil(daysBack / TARGET_LABEL_COUNT))
       for (let i = 0; i <= daysBack; i++) {
         const daysAgo = daysBack - i
         const tick = L.DomUtil.create('span', 'time-slider-tick', ticksEl)
@@ -442,7 +477,10 @@ function setupTimeSlider(app: any) {
       // (UTC midnight vs. Europe/Paris midnight, DST).
       const oldestArchiveDate = dates[0].date
       let newDaysBack = daysBack
-      while (parisDateString(dateForDaysAgo(newDaysBack)) !== oldestArchiveDate && newDaysBack < daysBack + 200) {
+      while (
+        parisDateString(dateForDaysAgo(newDaysBack)) !== oldestArchiveDate &&
+        newDaysBack < daysBack + 200
+      ) {
         newDaysBack++
       }
       if (newDaysBack === daysBack) return

@@ -1,0 +1,9 @@
+.claude/
+dist/
+node_modules/
+.vite/
+.git/
+coverage/
+public/
+data/
+archive/

@@ -13,7 +13,7 @@ const dataDir = path.join(__dirname, '../public/data')
 async function validateGeoJSON() {
   try {
     const files = await readdir(dataDir)
-    const geojsonFiles = files.filter(f => f.endsWith('.geojson'))
+    const geojsonFiles = files.filter((f) => f.endsWith('.geojson'))
 
     if (geojsonFiles.length === 0) {
       console.log('✓ No GeoJSON files to validate')

@@ -19,8 +19,9 @@ What you expected to happen instead.
 If applicable, add screenshots to help explain the problem.
 
 **Environment**
+
 - Browser/OS:
-- URL (if the deployed site): 
+- URL (if the deployed site):
 
 **Additional context**
 Anything else relevant (e.g. specific date/commune shown on the map).

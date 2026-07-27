@@ -15,7 +15,7 @@ steps, screenshots if relevant).
 3. Run `npm run build` before opening a PR — there's no automated test suite
    yet, so a successful build is the sanity check.
 4. If you touch `public/data/*.geojson` or `src/config.ts`, `npm run
-   validate-config` also runs automatically via a Claude Code hook (see
+validate-config` also runs automatically via a Claude Code hook (see
    `.claude/settings.json`).
 5. Open a pull request describing the change and why.
 
