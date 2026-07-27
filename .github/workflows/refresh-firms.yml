@@ -29,7 +29,15 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add public/data/firms-france-*.geojson public/data/communes-context.geojson data/commune-cache.json
+          git add public/data/firms-france-*.geojson public/data/communes-context.geojson
           git add -A -- public/data/archive
-          git diff --staged --quiet || git commit -m "chore: refresh FIRMS fire data"
-          git push
+          # commune-cache.json's lastSeen timestamps churn on almost every run
+          # (5-day query window overlaps ~5/6 between 3h runs); only commit it
+          # when something substantive also changed, else discard the bump.
+          if git diff --staged --quiet; then
+            git checkout -- data/commune-cache.json
+          else
+            git add data/commune-cache.json
+            git commit -m "chore: refresh FIRMS fire data"
+            git push
+          fi
