@@ -225,21 +225,54 @@ body {
   color: white;
 }
 
+.time-slider-label-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
 .time-slider-label {
   text-align: center;
   font-weight: 500;
 }
 
-.time-slider-note {
-  margin-top: 4px;
-  font-size: 10px;
-  line-height: 1.4;
+.time-slider-info {
+  flex-shrink: 0;
+  width: 15px;
+  height: 15px;
+  border: none;
+  border-radius: 50%;
+  background: var(--gray-100);
   color: var(--gray-900);
-  opacity: 0.7;
+  font-size: 10px;
+  line-height: 15px;
+  text-align: center;
+  padding: 0;
+  cursor: pointer;
 }
 
-.time-slider-note:empty {
-  display: none;
+.time-slider-info:hover {
+  background: var(--primary);
+  color: white;
+}
+
+.time-slider-popup {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: 200px;
+  background: var(--gray-900);
+  color: white;
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 1.4;
+  padding: 8px 10px;
+  border-radius: 6px;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.4);
+  z-index: 1;
 }
 
 .time-slider-sr-live {

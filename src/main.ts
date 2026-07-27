@@ -233,10 +233,13 @@ function setupTimeSlider(app: any) {
       </div>
       <div class="time-slider-controls-row">
         <button type="button" class="time-slider-step" data-dir="-1" aria-label="Jour précédent">◀</button>
-        <div class="time-slider-label"></div>
+        <div class="time-slider-label-wrap">
+          <span class="time-slider-label"></span>
+          <button type="button" class="time-slider-info" aria-label="Pourquoi si peu de points ?" aria-expanded="false" hidden>ⓘ</button>
+          <div class="time-slider-popup" role="note" hidden></div>
+        </div>
         <button type="button" class="time-slider-step" data-dir="1" aria-label="Jour suivant">▶</button>
       </div>
-      <div class="time-slider-note"></div>
       <div class="time-slider-sr-live" aria-live="polite" role="status"></div>
     `
     L.DomEvent.disableClickPropagation(div)
@@ -245,7 +248,8 @@ function setupTimeSlider(app: any) {
     const heading = div.querySelector('.time-slider-heading') as HTMLElement
     const input = div.querySelector('.time-slider-input') as HTMLInputElement
     const label = div.querySelector('.time-slider-label') as HTMLElement
-    const note = div.querySelector('.time-slider-note') as HTMLElement
+    const infoBtn = div.querySelector('.time-slider-info') as HTMLButtonElement
+    const popup = div.querySelector('.time-slider-popup') as HTMLElement
     const srLive = div.querySelector('.time-slider-sr-live') as HTMLElement
     const playBtn = div.querySelector('.time-slider-play') as HTMLButtonElement
     const histogramEl = div.querySelector('.time-slider-histogram') as HTMLElement
@@ -269,6 +273,19 @@ function setupTimeSlider(app: any) {
       }
       return count
     }
+
+    popup.textContent =
+      'Les satellites ne survolent la France que quelques fois par jour : les heures pas encore atteintes reprennent les points d’hier à la même heure, remplacés au fil de la journée par les vraies détections.'
+
+    const closePopup = () => {
+      popup.hidden = true
+      infoBtn.setAttribute('aria-expanded', 'false')
+    }
+    infoBtn.addEventListener('click', () => {
+      const willOpen = popup.hidden
+      popup.hidden = !willOpen
+      infoBtn.setAttribute('aria-expanded', String(willOpen))
+    })
 
     const ticks: HTMLElement[] = []
     const bars: HTMLElement[] = []
@@ -319,10 +336,8 @@ function setupTimeSlider(app: any) {
       const currentLabel = dayLabel(daysAgo)
       label.textContent = currentLabel
       srLive.textContent = `Affichage du ${currentLabel}`
-      note.textContent =
-        daysAgo === 0
-          ? 'Les satellites ne survolent la France que quelques fois par jour : les heures pas encore atteintes reprennent les points d’hier à la même heure, remplacés au fil de la journée par les vraies détections.'
-          : ''
+      closePopup()
+      infoBtn.hidden = daysAgo !== 0
       applyFilter(daysAgo)
       stepButtons.forEach((btn) => {
         const dir = Number(btn.dataset.dir)
