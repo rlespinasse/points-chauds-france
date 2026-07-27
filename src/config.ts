@@ -139,9 +139,9 @@ const communesDetail = (properties: any) => `
 export const config = {
   // ============= MAP ============= //
   map: {
-    elementId: 'map',           // HTML element ID where map mounts
-    center: [46.6, 2.5],        // Initial center [lat, lng]
-    zoom: 6,                    // Initial zoom level
+    elementId: 'map', // HTML element ID where map mounts
+    center: [46.6, 2.5], // Initial center [lat, lng]
+    zoom: 6, // Initial zoom level
   },
 
   // ============= TITLE ============= //
@@ -153,14 +153,14 @@ export const config = {
 
   // ============= BASE LAYERS (Tile services) ============= //
   baseLayers: {
-    'OpenStreetMap': {
+    OpenStreetMap: {
       url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
       options: {
         attribution: '© OpenStreetMap contributors',
         maxZoom: 19,
       },
     },
-    'Satellite': {
+    Satellite: {
       url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
       options: {
         attribution: '© Esri',
@@ -316,7 +316,9 @@ export const config = {
         <p>
           Détections thermiques VIIRS (Suomi&nbsp;NPP, NOAA-20, NOAA-21) fournies par
           <a href="https://firms.modaps.eosdis.nasa.gov/" target="_blank" rel="noopener">NASA FIRMS</a>
-          (LANCE, NASA GSFC), fenêtre glissante de 5&nbsp;jours.
+          (LANCE, NASA GSFC), fenêtre glissante de 5&nbsp;jours, mise à jour automatiquement
+          toutes les 3&nbsp;heures. Données publiques, sans restriction d'usage, selon la
+          <a href="https://www.earthdata.nasa.gov/learn/use-data/data-citations-acknowledgements" target="_blank" rel="noopener">politique de citation NASA Earthdata</a>.
         </p>
         <h3>Commune / département / région</h3>
         <p>
@@ -360,6 +362,30 @@ export const config = {
           L'affichage de la carte nécessite des requêtes vers des serveurs tiers
           (tuiles OpenStreetMap ou Esri) susceptibles de journaliser votre
           adresse IP selon leurs propres politiques de confidentialité.
+        </p>`,
+    },
+    {
+      id: 'credits',
+      label: 'Crédits',
+      content: `
+        <h2>Crédits</h2>
+        <h3>Technologies</h3>
+        <ul>
+          <li><a href="https://leafletjs.com/" target="_blank" rel="noopener">Leaflet</a> — bibliothèque cartographique JavaScript.</li>
+          <li><a href="https://github.com/rlespinasse/leaflet-atlas" target="_blank" rel="noopener">leaflet-atlas</a> — wrapper Leaflet piloté par configuration (couches, styles, recherche, pages légales, mesure d'audience).</li>
+          <li><a href="https://vite.dev/" target="_blank" rel="noopener">Vite</a> — outil de build et serveur de développement.</li>
+          <li><a href="https://www.typescriptlang.org/" target="_blank" rel="noopener">TypeScript</a> — code source typé.</li>
+        </ul>
+        <h3>Données</h3>
+        <p>
+          Voir l'onglet «&nbsp;Données &amp; licences&nbsp;» pour le détail des sources
+          (NASA FIRMS, geo.api.gouv.fr, fonds de carte) et de leurs licences respectives.
+        </p>
+        <h3>Code source</h3>
+        <p>
+          Projet personnel et open source (licence MIT), par Romain Lespinasse.
+          Code source sur
+          <a href="https://github.com/rlespinasse/points-chauds-france" target="_blank" rel="noopener">github.com/rlespinasse/points-chauds-france</a>.
         </p>`,
     },
   ],
