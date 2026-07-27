@@ -7,7 +7,7 @@ import markerIcon from 'leaflet/dist/images/marker-icon.png'
 import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png'
 import markerShadow from 'leaflet/dist/images/marker-shadow.png'
 import { MapApp } from 'leaflet-atlas'
-import { config, frpScale, frpBucketId, acqDateTimeToUtcDate, parisDateString } from './config'
+import { config, frpScale, frpBucketId, acqDateTimeToUtcDate, parisDateString, parisMinutesOfDay } from './config'
 
 // Leaflet's default icon path auto-detection breaks once Vite inlines the
 // marker images as base64 data URIs in production builds, causing 404s for
@@ -79,12 +79,17 @@ function setupTimeSlider(app: any) {
   const map = app.getMap()
   let daysBack = LIVE_DAYS_BACK
 
-  const entries: { group: any; marker: any; dateStr: string | null }[] = []
+  const entries: { group: any; marker: any; dateStr: string | null; minutesOfDay: number | null }[] = []
   for (const def of app.getAllLayerDefs()) {
     if (!SLIDER_LAYER_IDS.includes(def.id) || !def._leafletLayer) continue
     def._leafletLayer.eachLayer((marker: any) => {
       const utcDate = acqDateTimeToUtcDate(marker.feature.properties.acq_date, marker.feature.properties.acq_time)
-      entries.push({ group: def._leafletLayer, marker, dateStr: utcDate ? parisDateString(utcDate) : null })
+      entries.push({
+        group: def._leafletLayer,
+        marker,
+        dateStr: utcDate ? parisDateString(utcDate) : null,
+        minutesOfDay: utcDate ? parisMinutesOfDay(utcDate) : null,
+      })
     })
   }
 
@@ -165,6 +170,28 @@ function setupTimeSlider(app: any) {
         map.removeLayer(currentArchiveLayer)
         currentArchiveLayer = null
       }
+      // "Today" (daysAgo === 0) blends in yesterday's data for the hours
+      // today hasn't reached yet: VIIRS overpasses France only ~5-6x/day,
+      // clustered in the afternoon/evening, so right after midnight "today"
+      // would otherwise show almost nothing until those passes catch up.
+      // Borrowing yesterday's detections for the same not-yet-elapsed time
+      // window gives a full-looking day that gets progressively replaced by
+      // today's real detections as they come in.
+      if (daysAgo === 0) {
+        const todayDate = parisDateString(dateForDaysAgo(0))
+        const yesterdayDate = parisDateString(dateForDaysAgo(1))
+        const nowMinutes = parisMinutesOfDay(now)
+        for (const entry of entries) {
+          const shouldShow =
+            (entry.dateStr === todayDate && entry.minutesOfDay !== null && entry.minutesOfDay <= nowMinutes) ||
+            (entry.dateStr === yesterdayDate && entry.minutesOfDay !== null && entry.minutesOfDay > nowMinutes)
+          const isShown = entry.group.hasLayer(entry.marker)
+          if (shouldShow && !isShown) entry.group.addLayer(entry.marker)
+          else if (!shouldShow && isShown) entry.group.removeLayer(entry.marker)
+        }
+        return
+      }
+
       const targetDate = parisDateString(dateForDaysAgo(daysAgo))
       for (const entry of entries) {
         const shouldShow = entry.dateStr === targetDate
@@ -209,6 +236,7 @@ function setupTimeSlider(app: any) {
         <div class="time-slider-label"></div>
         <button type="button" class="time-slider-step" data-dir="1" aria-label="Jour suivant">▶</button>
       </div>
+      <div class="time-slider-note"></div>
       <div class="time-slider-sr-live" aria-live="polite" role="status"></div>
     `
     L.DomEvent.disableClickPropagation(div)
@@ -217,6 +245,7 @@ function setupTimeSlider(app: any) {
     const heading = div.querySelector('.time-slider-heading') as HTMLElement
     const input = div.querySelector('.time-slider-input') as HTMLInputElement
     const label = div.querySelector('.time-slider-label') as HTMLElement
+    const note = div.querySelector('.time-slider-note') as HTMLElement
     const srLive = div.querySelector('.time-slider-sr-live') as HTMLElement
     const playBtn = div.querySelector('.time-slider-play') as HTMLButtonElement
     const histogramEl = div.querySelector('.time-slider-histogram') as HTMLElement
@@ -224,6 +253,21 @@ function setupTimeSlider(app: any) {
     const stepButtons = div.querySelectorAll<HTMLButtonElement>('.time-slider-step[data-dir]')
     notifyStatus = (text) => {
       srLive.textContent = text
+    }
+
+    // Matches applyFilter's "today" blend so the histogram's last bar (and
+    // the note below) reflect what's actually shown on the map, not just
+    // today's not-yet-complete real count.
+    const blendedTodayCount = () => {
+      const todayDate = parisDateString(dateForDaysAgo(0))
+      const yesterdayDate = parisDateString(dateForDaysAgo(1))
+      const nowMinutes = parisMinutesOfDay(now)
+      let count = 0
+      for (const entry of entries) {
+        if (entry.dateStr === todayDate && entry.minutesOfDay !== null && entry.minutesOfDay <= nowMinutes) count++
+        else if (entry.dateStr === yesterdayDate && entry.minutesOfDay !== null && entry.minutesOfDay > nowMinutes) count++
+      }
+      return count
     }
 
     const ticks: HTMLElement[] = []
@@ -236,7 +280,7 @@ function setupTimeSlider(app: any) {
       const dayCounts: number[] = []
       for (let i = 0; i <= daysBack; i++) {
         const daysAgo = daysBack - i
-        dayCounts.push(countsByDate.get(parisDateString(dateForDaysAgo(daysAgo))) ?? 0)
+        dayCounts.push(daysAgo === 0 ? blendedTodayCount() : countsByDate.get(parisDateString(dateForDaysAgo(daysAgo))) ?? 0)
       }
       const maxDayCount = Math.max(1, ...dayCounts)
       // Once the archive pushes daysBack well past a week, labeling every
@@ -275,6 +319,10 @@ function setupTimeSlider(app: any) {
       const currentLabel = dayLabel(daysAgo)
       label.textContent = currentLabel
       srLive.textContent = `Affichage du ${currentLabel}`
+      note.textContent =
+        daysAgo === 0
+          ? 'Les satellites ne survolent la France que quelques fois par jour : les heures pas encore atteintes reprennent les points d’hier à la même heure, remplacés au fil de la journée par les vraies détections.'
+          : ''
       applyFilter(daysAgo)
       stepButtons.forEach((btn) => {
         const dir = Number(btn.dataset.dir)

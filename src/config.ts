@@ -40,6 +40,13 @@ const PARIS_DATETIME_FORMAT = new Intl.DateTimeFormat('fr-FR', {
   minute: '2-digit',
 })
 
+const PARIS_TIME_FORMAT = new Intl.DateTimeFormat('fr-FR', {
+  timeZone: 'Europe/Paris',
+  hour: '2-digit',
+  minute: '2-digit',
+  hourCycle: 'h23',
+})
+
 // FIRMS gives acq_date/acq_time in UTC — combine them into a UTC Date.
 // Exported so src/main.ts's time slider can bucket hotspots by Paris-local
 // day without duplicating this parsing.
@@ -56,6 +63,16 @@ export function parisDateString(date: Date) {
     PARIS_DATETIME_FORMAT.formatToParts(date).map((p) => [p.type, p.value])
   )
   return `${parts.year}-${parts.month}-${parts.day}`
+}
+
+// Minutes since Europe/Paris-local midnight — lets src/main.ts's time slider
+// compare "has this time of day already happened today" between a hotspot's
+// detection time and the current moment, regardless of CET/CEST.
+export function parisMinutesOfDay(date: Date) {
+  const parts = Object.fromEntries(
+    PARIS_TIME_FORMAT.formatToParts(date).map((p) => [p.type, p.value])
+  )
+  return Number(parts.hour) * 60 + Number(parts.minute)
 }
 
 function toParisDateTime(acqDate: string | undefined, acqTime: string | undefined) {
@@ -248,6 +265,9 @@ export const config = {
             Le curseur en bas de carte permet de rejouer les 5 derniers jours, journée par journée.
             Ce sont des détections thermiques brutes, pas des incendies confirmés : elles incluent
             aussi bien des feux de végétation que des sources de chaleur industrielles, agricoles, etc.
+            Pour la journée en cours, les heures pas encore atteintes affichent les points de la
+            veille à la même heure (en attendant les prochains passages satellite), remplacés
+            progressivement par les vraies détections du jour.
           </li>
           <li>
             Commune / département / région : point-in-polygon via
