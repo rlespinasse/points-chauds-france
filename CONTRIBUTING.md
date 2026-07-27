@@ -1,27 +1,27 @@
-# Contributing
+# Contribuer
 
-Bug reports and pull requests are welcome.
+Les rapports de bugs et les pull requests sont les bienvenus.
 
-## Reporting a bug
+## Signaler un bug
 
-Open an [issue](https://github.com/rlespinasse/points-chauds-france/issues/new)
-with what you expected, what happened, and how to reproduce it (browser,
-steps, screenshots if relevant).
+Ouvrez une [issue](https://github.com/rlespinasse/points-chauds-france/issues/new)
+en indiquant ce que vous attendiez, ce qui s'est passé, et comment le reproduire
+(navigateur, étapes, captures d'écran si pertinent).
 
-## Submitting a change
+## Proposer un changement
 
-1. Fork the repo and create a branch from `main`.
-2. `npm install`, then `npm run dev` to work locally.
-3. Run `npm run build` before opening a PR — there's no automated test suite
-   yet, so a successful build is the sanity check.
-4. If you touch `public/data/*.geojson` or `src/config.ts`, `npm run
-validate-config` also runs automatically via a Claude Code hook (see
-   `.claude/settings.json`).
-5. Open a pull request describing the change and why.
+1. Forkez le dépôt et créez une branche depuis `main`.
+2. `npm install`, puis `npm run dev` pour travailler en local.
+3. Lancez `npm run build` avant d'ouvrir une PR — il n'y a pas encore de suite
+   de tests automatisés, donc un build réussi sert de vérification de bon sens.
+4. Si vous touchez à `public/data/*.geojson` ou `src/config.ts`, `npm run
+   validate-config` s'exécute aussi automatiquement via un hook Claude Code
+   (voir `.claude/settings.json`).
+5. Ouvrez une pull request décrivant le changement et sa raison d'être.
 
-By contributing, you agree your contributions are licensed under the
-project's [MIT license](LICENSE).
+En contribuant, vous acceptez que vos contributions soient placées sous la
+[licence MIT](LICENSE) du projet.
 
-## Code of conduct
+## Code de conduite
 
-This project follows the [Code of Conduct](CODE_OF_CONDUCT.md).
+Ce projet respecte le [code de conduite](CODE_OF_CONDUCT.md).

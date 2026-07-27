@@ -1,40 +1,40 @@
 # Documentation - Points Chauds France
 
-Bienvenue ! Cette documentation est structurée selon la méthode [Diataxis](https://diataxis.fr/).
+Bienvenue ! Cette documentation est structurée selon la méthode [Diataxis](https://diataxis.fr/).
 
-## 🚀 [Tutoriels](./tutorials/)
+## 🚀 [Tutoriels](./tutoriels/)
 
-Apprenez les bases étape par étape :
+Apprenez les bases étape par étape :
 
-- [Getting started](./tutorials/getting-started.md) - Installation et première utilisation
+- [Prise en main](./tutoriels/premiers-pas.md) - Installation et première utilisation
 
-## 📚 [Guides pratiques](./how-to/)
+## 📚 [Guides pratiques](./guides/)
 
-Accomplir des tâches spécifiques :
+Accomplir des tâches spécifiques :
 
-- [Setup FIRMS API key](./how-to/setup-firms-key.md)
-- [Refresh data](./how-to/refresh-data.md)
-- [Deploy](./how-to/deploy.md)
-- [Work with archives](./how-to/work-with-archives.md)
+- [Configurer la clé API FIRMS](./guides/configurer-la-cle-firms.md)
+- [Rafraîchir les données](./guides/mettre-a-jour-les-donnees.md)
+- [Déployer](./guides/deployer-le-site.md)
+- [Travailler avec les archives](./guides/travailler-avec-les-archives.md)
 
-## 💡 [Explications](./explanation/)
+## 💡 [Explications](./explications/)
 
-Comprendre les concepts et le design :
+Comprendre les concepts et le design :
 
-- [Architecture](./explanation/architecture.md)
-- [Why 5-day limit?](./explanation/why-5-day-limit.md)
-- [Data retention](./explanation/data-retention.md)
+- [Architecture](./explications/architecture.md)
+- [Pourquoi une limite de 5 jours ?](./explications/limite-5-jours.md)
+- [Rétention des données](./explications/retention-des-donnees.md)
 
 ## 🔍 [Référence](./reference/)
 
-Documentation précise et exhaustive :
+Documentation précise et exhaustive :
 
-- [API endpoints](./reference/api-endpoints.md)
-- [npm scripts](./reference/npm-scripts.md)
-- [Data formats](./reference/data-formats.md)
-- [Configuration](./reference/config-schema.md)
+- [Points de terminaison API](./reference/points-de-terminaison-api.md)
+- [Scripts npm](./reference/scripts-npm.md)
+- [Formats de données](./reference/formats-de-donnees.md)
+- [Configuration](./reference/schema-config.md)
 
 ---
 
-**Questions ?** Consulte la section [référence](./reference/) ou ouvre une issue sur
+**Questions ?** Consulte la section [référence](./reference/) ou ouvre une issue sur
 [GitHub](https://github.com/rlespinasse/points-chauds-france/issues).

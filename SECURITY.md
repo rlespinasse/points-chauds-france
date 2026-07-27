@@ -1,18 +1,21 @@
-# Security Policy
+# Politique de sécurité
 
-This is a static, client-side map with no backend and no user data — the
-attack surface is small, but reports are still welcome.
+Il s'agit d'une carte statique côté client, sans backend ni données
+utilisateur — la surface d'attaque est faible, mais les signalements restent
+les bienvenus.
 
-## Reporting a vulnerability
+## Signaler une vulnérabilité
 
-Please do **not** open a public issue for security concerns. Instead, use
-[GitHub's private vulnerability reporting](https://github.com/rlespinasse/points-chauds-france/security/advisories/new)
-for this repository, or contact the maintainer directly via the
-[GitHub profile](https://github.com/rlespinasse).
+Merci de **ne pas** ouvrir d'issue publique pour un problème de sécurité.
+Utilisez plutôt le
+[signalement privé de vulnérabilités de GitHub](https://github.com/rlespinasse/points-chauds-france/security/advisories/new)
+pour ce dépôt, ou contactez directement le mainteneur via son
+[profil GitHub](https://github.com/rlespinasse).
 
-Include what you found, how to reproduce it, and its potential impact. You
-should get a response within a few days.
+Indiquez ce que vous avez trouvé, comment le reproduire, et son impact
+potentiel. Vous devriez recevoir une réponse sous quelques jours.
 
-## Supported versions
+## Versions prises en charge
 
-Only the latest deployed version (built from `main`) is supported.
+Seule la dernière version déployée (construite depuis `main`) est prise en
+charge.
