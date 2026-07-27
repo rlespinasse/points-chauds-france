@@ -5,6 +5,11 @@ on:
     branches:
       - main
       - master
+  workflow_run:
+    workflows:
+      - Refresh FIRMS Fire Data
+    types:
+      - completed
   workflow_dispatch:
 
 permissions:
@@ -18,9 +23,12 @@ concurrency:
 
 jobs:
   build:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.ref }}
 
       - name: Setup Node.js
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
