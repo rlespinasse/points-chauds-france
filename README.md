@@ -35,6 +35,7 @@ NASA FIRMS API ──▶ scripts/fetch-firms.mjs ──▶ public/data/*.geojson
 No backend, no database: `scripts/fetch-firms.mjs` writes GeoJSON files into `public/data/`, and the frontend is a static Vite build reading them through [`leaflet-atlas`](https://www.npmjs.com/package/leaflet-atlas), a config-driven Leaflet wrapper.
 
 **The pipeline**, in order:
+
 1. **Fetch** — FIRMS area CSV API, once per satellite (`VIIRS_SNPP_NRT`/`NOAA20`/`NOAA21`), over France + Corsica, requesting the maximum 5-day window FIRMS allows per request (`DAY_RANGE = 5`).
 2. **Reverse-geocode** each point to its commune via `geo.api.gouv.fr` (point-in-polygon, unlike BAN address geocoding which fails on remote points with no nearby building). Cached in `data/commune-cache.json` (keyed by rounded coordinates) — the cron runs every 3h and each request's 5-day window overlaps ~5/6 with the previous run's, so without this cache nearly every point would be re-geocoded on every run.
 3. **Archive** — every point is appended to `data/archive/YYYY-MM-DD.geojson`, deduped by `satellite + acq_date + acq_time + coordinates` (FIRMS has no stable per-detection ID). Exists because FIRMS caps a single request at 5 days — this local archive is the only place history beyond that survives. The frontend's time slider lazily fetches these archived days on demand beyond the live 5-day window. `FIRMS_BACKFILL_DAYS=<n> npm run fetch-firms` does a one-off backfill of older days into the archive, limited by however much NRT retention FIRMS still has for those dates.
@@ -60,6 +61,11 @@ Already fully configured — nothing to set up beyond the secret below.
 
 - Hotspot detections: [NASA FIRMS](https://firms.modaps.eosdis.nasa.gov/) (LANCE, NASA GSFC) — VIIRS Suomi NPP, NOAA-20, NOAA-21.
 - Commune/département/région lookup: [geo.api.gouv.fr](https://geo.api.gouv.fr/) (Etalab).
+
+## Documentation
+
+Full Diataxis-structured documentation (tutorials, how-to guides,
+explanations, reference) lives in [`docs/`](./docs/README.md).
 
 ## Contributing
 

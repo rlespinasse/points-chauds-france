@@ -8,6 +8,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "validate-config": "node scripts/validate-geojson.mjs",
+    "validate-docs": "bash scripts/validate-docs.sh",
     "discover-dataset": "node scripts/discover-dataset.mjs",
     "fetch-firms": "node scripts/fetch-firms.mjs",
     "generate": "python scripts/generate-config.py",
