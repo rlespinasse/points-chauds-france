@@ -283,6 +283,85 @@ export const config = {
         </ul>
       `,
     },
+    {
+      id: 'mentions',
+      label: 'Mentions légales',
+      content: `
+        <h2>Mentions légales</h2>
+        <h3>Éditeur</h3>
+        <p>Points chauds France est un projet personnel et open source édité par Romain Lespinasse.</p>
+        <p>
+          Code source et contact&nbsp;:
+          <a href="https://github.com/rlespinasse/points-chauds-france" target="_blank" rel="noopener">github.com/rlespinasse/points-chauds-france</a>
+          (signalements via les <em>issues</em> du dépôt).
+        </p>
+        <h3>Hébergement</h3>
+        <p>
+          Site hébergé par GitHub&nbsp;Pages — GitHub,&nbsp;Inc.,
+          88 Colin P. Kelly Jr. Street, San Francisco, CA 94107, États-Unis.
+        </p>
+        <h3>Propriété intellectuelle</h3>
+        <p>
+          Le code de Points chauds France est distribué sous licence MIT. Les données de détection
+          satellite et de découpage administratif affichées restent la propriété de leurs
+          producteurs respectifs (voir l'onglet «&nbsp;Données &amp; licences&nbsp;»).
+        </p>`,
+    },
+    {
+      id: 'donnees',
+      label: 'Données & licences',
+      content: `
+        <h2>Données &amp; licences</h2>
+        <h3>Points chauds (détections satellite)</h3>
+        <p>
+          Détections thermiques VIIRS (Suomi&nbsp;NPP, NOAA-20, NOAA-21) fournies par
+          <a href="https://firms.modaps.eosdis.nasa.gov/" target="_blank" rel="noopener">NASA FIRMS</a>
+          (LANCE, NASA GSFC), fenêtre glissante de 5&nbsp;jours.
+        </p>
+        <h3>Commune / département / région</h3>
+        <p>
+          Rattachement de chaque point chaud à sa commune obtenu par géolocalisation inversée via
+          <a href="https://geo.api.gouv.fr/" target="_blank" rel="noopener">geo.api.gouv.fr</a>
+          (Etalab), sous
+          <a href="https://www.etalab.gouv.fr/licence-ouverte-open-licence/" target="_blank" rel="noopener">Licence Ouverte 2.0</a>.
+        </p>
+        <h3>Fond cartographique</h3>
+        <p>
+          © les contributeurs
+          <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>,
+          sous licence ODbL. Fond satellite&nbsp;: © Esri.
+        </p>
+        <h3>Cartographie</h3>
+        <p>
+          Réalisée avec <a href="https://leafletjs.com/" target="_blank" rel="noopener">Leaflet</a>
+          et <a href="https://github.com/rlespinasse/leaflet-atlas" target="_blank" rel="noopener">leaflet-atlas</a>.
+        </p>`,
+    },
+    {
+      id: 'confidentialite',
+      label: 'Confidentialité',
+      content: `
+        <h2>Confidentialité</h2>
+        <p>
+          Points chauds France est un site statique qui mesure son audience avec
+          <a href="https://www.goatcounter.com/" target="_blank" rel="noopener">GoatCounter</a>,
+          un outil respectueux de la vie privée&nbsp;: aucune donnée personnelle n'est
+          collectée, aucun cookie n'est déposé et votre adresse IP n'est pas conservée.
+          Les statistiques recueillies (vues de page, événements d'usage, navigateur,
+          provenance) sont anonymes et agrégées. Les requêtes émises depuis un poste
+          local de développement ne sont pas comptabilisées.
+        </p>
+        <p>
+          Vos préférences d'affichage (couches actives, position de la carte) sont
+          encodées dans l'URL de la page (fragment <em>#…</em>) pour permettre le partage
+          d'une vue précise&nbsp;: elles ne sont jamais transmises à un serveur.
+        </p>
+        <p>
+          L'affichage de la carte nécessite des requêtes vers des serveurs tiers
+          (tuiles OpenStreetMap ou Esri) susceptibles de journaliser votre
+          adresse IP selon leurs propres politiques de confidentialité.
+        </p>`,
+    },
   ],
 
   // ============= ANALYTICS ============= //
