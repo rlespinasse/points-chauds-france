@@ -17,3 +17,10 @@ updates:
       dependencies:
         patterns:
           - '*'
+    ignore:
+      # typescript-eslint hard-errors on TypeScript 7.0 (it needs the TS 6
+      # compiler API) and no release supports it yet. Remove this entry once
+      # https://github.com/typescript-eslint/typescript-eslint/issues/10940
+      # lands and typescript-eslint accepts TS >= 7.1.
+      - dependency-name: 'typescript'
+        update-types: ['version-update:semver-major']
